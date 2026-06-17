@@ -85,8 +85,8 @@ with nvml():
             pynvml.NVML_TEMPERATURE_THRESHOLD_GPU_MAX,
             default=100,
         )
-        print_entry("power_usage", q("nvmlDeviceGetPowerUsage") / 1000.0)
-        print_entry("power_limit", q("nvmlDeviceGetPowerManagementLimit") / 1000.0)
+        print_entry("power_usage", q("nvmlDeviceGetPowerUsage", default=0) / 1000.0)
+        print_entry("power_limit", q("nvmlDeviceGetPowerManagementLimit", default=0) / 1000.0)
 
         processes = {}
         for proc_type, proc_query in (
@@ -108,7 +108,7 @@ with nvml():
 
         if len(processes) > 0:
             timestamp = 0  # list all processes
-            samples = q("nvmlDeviceGetProcessUtilization", timestamp, default=[])
+            samples = q("nvmlDeviceGetProcessUtilization", timestamp, default=[]) or []
             for s in samples:
                 if s.pid in processes:
                     processes[s.pid].update(
